@@ -1,0 +1,29 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Team</title>
+<style>
+  body { font: 18px/1.5 "Segoe UI", system-ui, sans-serif; margin: 40px; color: #1b1b1b; }
+  h1 { font-size: 28px; margin: 0 0 12px; }
+  li { padding: 4px 0; }
+</style>
+</head>
+<body>
+<h1>Team</h1>
+<ul id="names"><li>Loading…</li></ul>
+<script>
+  var list = document.getElementById('names');
+  fetch('https://jsonplaceholder.typicode.com/users')
+    .then(function (r) { return r.json(); })
+    .then(function (users) {
+      list.textContent = '';
+      users.forEach(function (u) {
+        var li = document.createElement('li');
+        li.textContent = u.name + ' · ' + u.address.city;
+        list.appendChild(li);
+      });
+    });
+</script>
+</body>
+</html>

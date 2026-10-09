@@ -1,0 +1,84 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Team dashboard</title>
+<script type="application/json" class="ka-livedata-manifest">
+[
+  {
+    "kind": "list",
+    "spItemUrl": "list:https://YOUR-TENANT.sharepoint.com/sites/YOUR-SITE/YOUR-LIST-ID",
+    "webUrl": "https://YOUR-TENANT.sharepoint.com/sites/YOUR-SITE",
+    "listId": "YOUR-LIST-ID",
+    "select": ["Title", "City", "Role"],
+    "label": "Team"
+  }
+]
+</script>
+<style>
+  body { font: 18px/1.5 "Segoe UI", system-ui, sans-serif; margin: 40px; color: #1b1b1b; }
+  h1 { font-size: 28px; margin: 0 0 12px; }
+  table { border-collapse: collapse; min-width: 480px; }
+  th, td { text-align: left; padding: 8px 16px 8px 0; border-bottom: 1px solid #ddd; }
+  th { font-weight: 600; color: #555; }
+  button { font: inherit; padding: 6px 14px; margin-top: 16px; cursor: pointer; }
+  .note { color: #8a3b00; }
+</style>
+</head>
+<body>
+<h1>Team</h1>
+<div id="root"><p>Loading live data…</p></div>
+<button id="refresh">Refresh</button>
+<script>
+  var root = document.getElementById('root');
+  var NAMES = { Title: 'Name' };
+
+  function note(text) {
+    var p = document.createElement('p');
+    p.className = 'note';
+    p.textContent = text;
+    return p;
+  }
+
+  function renderTable(data) {
+    var table = document.createElement('table');
+    var head = table.createTHead().insertRow();
+    data.headers.forEach(function (h) {
+      var th = document.createElement('th');
+      th.textContent = NAMES[h] || h;
+      head.appendChild(th);
+    });
+    var body = table.createTBody();
+    data.rows.forEach(function (row) {
+      var tr = body.insertRow();
+      row.forEach(function (cell) {
+        var td = tr.insertCell();
+        td.textContent = cell;
+      });
+    });
+    return table;
+  }
+
+  function render() {
+    root.textContent = '';
+    var results = window.__LD_RESULTS__;
+    if (!results) {
+      root.appendChild(note('Open this file in SharePoint to see the live data.'));
+      return;
+    }
+    var entry = results[Object.keys(results)[0]];
+    if (entry.error) {
+      root.appendChild(note("Couldn't load the Team list: " + entry.error));
+      return;
+    }
+    root.appendChild(renderTable(JSON.parse(entry.content)));
+  }
+
+  document.getElementById('refresh').addEventListener('click', function () {
+    parent.postMessage({ type: 'ka-html-viewer-refresh' }, '*');
+  });
+
+  render();
+</script>
+</body>
+</html>
